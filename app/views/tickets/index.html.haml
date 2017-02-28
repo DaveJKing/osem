@@ -1,0 +1,49 @@
+.container
+  .row
+    .col-md-12
+      .page-header
+        %h1
+          Tickets
+      %p.lead
+        Please choose your tickets for 
+        %strong
+          = @conference.title
+        here*
+      =form_tag(conference_ticket_purchases_path, method: :post) do |f|
+        %table.table.table-hover
+          %thead
+            %tr
+              %th Ticket
+              %th Quantity
+              %th Price
+              %th Total
+          %tbody
+          - @conference.tickets.each do |ticket|
+            = render partial: 'ticket', f: f, locals: {ticket: ticket}
+          %tr
+            %td
+            %td
+            %td.col-sm-1.col-md-1.text-center
+              %h4
+                Total
+            %td.col-sm-1.col-md-1.text-center
+              %h4
+                %strong
+                  = @conference.tickets.first.price.symbol
+                  %span{id: 'total_price'}
+                    0
+        .pull-right
+          .btn-group-vertical
+            = button_tag(type: 'submit', class: 'btn btn-success btn-lg') do
+              Continue
+              %i.fa.fa-shopping-cart
+            - if current_user.ticket_purchases.by_conference(@conference).any?
+              = link_to 'Back to registration', conference_conference_registration_path(@conference.short_title), class: 'btn btn-default btn-sm'
+            - else
+              = link_to 'Cancel registration', conference_conference_registration_path(@conference.short_title), method: :delete, class: 'btn btn-danger btn-sm',
+                data: { confirm: 'Are you sure you want to unregister?' }
+  .row
+    .col-md-13
+      %p.text-muted.text-center
+        %small
+          * Getting a ticket is mandatory. Your participation will not be valid until you get a ticket.
